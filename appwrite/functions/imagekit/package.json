@@ -1,6 +1,0 @@
-{
-  "type": "module",
-  "dependencies": {
-    "imagekit": "^6.0.0"
-  }
-}
