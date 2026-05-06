@@ -11,7 +11,7 @@ import type { File } from '@/types/all-types';
 
 export const FolderPreview = () => {
   const { folderName } = useParams();
-  const files = useLoaderData();
+  const files = useLoaderData() as File[];
 
   return (
     <>

@@ -3,12 +3,32 @@ import { AppwriteException } from 'appwrite';
 import { getCurrentUserFolder } from '@/lib/appwrite';
 import { executeImageKitFunction } from '@/lib/imagekitFunction';
 
+const toList = (value: unknown) => {
+  if (Array.isArray(value)) return value;
+
+  if (!value || typeof value !== 'object') return [];
+
+  const response = value as {
+    data?: unknown;
+    files?: unknown;
+    folders?: unknown;
+  };
+
+  if (Array.isArray(response.data)) return response.data;
+  if (Array.isArray(response.files)) return response.files;
+  if (Array.isArray(response.folders)) return response.folders;
+
+  return [];
+};
+
 const getFiles = async (folderName: string, isRecent?: boolean) => {
   try {
-    return await executeImageKitFunction('LIST_FILES', {
+    const files = await executeImageKitFunction('LIST_FILES', {
       path: folderName || '',
       sort: isRecent ? 'DESC_CREATED' : 'ASC_CREATED',
     });
+
+    return toList(files);
   } catch (error) {
     console.log(error);
 
@@ -18,10 +38,12 @@ const getFiles = async (folderName: string, isRecent?: boolean) => {
 
 const getFolders = async (folderName: string) => {
   try {
-    return await executeImageKitFunction('LIST_FOLDERS', {
+    const folders = await executeImageKitFunction('LIST_FOLDERS', {
       path: folderName || '',
       type: 'folder',
     });
+
+    return toList(folders);
   } catch (error) {
     console.log(error);
 
