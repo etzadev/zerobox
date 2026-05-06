@@ -24,8 +24,9 @@ const toList = (value: unknown) => {
 const getFiles = async (folderName: string, isRecent?: boolean) => {
   try {
     const files = await executeImageKitFunction('LIST_FILES', {
-      path: folderName || '',
+      path: `/${folderName}`,
       sort: isRecent ? 'DESC_CREATED' : 'ASC_CREATED',
+      type: 'file',
     });
 
     return toList(files);
@@ -39,7 +40,7 @@ const getFiles = async (folderName: string, isRecent?: boolean) => {
 const getFolders = async (folderName: string) => {
   try {
     const folders = await executeImageKitFunction('LIST_FOLDERS', {
-      path: folderName || '',
+      path: `/${folderName}`,
       type: 'folder',
     });
 

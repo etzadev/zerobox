@@ -25,6 +25,7 @@ const getFilesByFolder = async (path: string) => {
   try {
     const files = await executeImageKitFunction('LIST_FILES', {
       path: `/${folderName}/${path}`,
+      type: 'file',
     });
 
     return toList(files);

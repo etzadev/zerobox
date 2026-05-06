@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useFetcher } from 'react-router';
+import { useFetcher, useRevalidator } from 'react-router';
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,7 @@ interface Props {
 
 export const NewFolder = ({ open, onOpenChange, onSuccess }: Props) => {
   const fetcher = useFetcher();
+  const revalidator = useRevalidator();
   const [folderName, setFolderName] = useState('Nueva Carpeta');
   const [parentFolderPath, setParentFolderPath] = useState('/');
   const isLoading = fetcher.state !== 'idle';
@@ -32,6 +33,7 @@ export const NewFolder = ({ open, onOpenChange, onSuccess }: Props) => {
 
       onSuccess?.();
       onOpenChange(false);
+      revalidator.revalidate();
     } else {
       toast.error(
         fetcher.data.error ?? 'Algo salió mal, inténtalo de nuevo más tarde',
@@ -39,7 +41,7 @@ export const NewFolder = ({ open, onOpenChange, onSuccess }: Props) => {
 
       console.log(fetcher.data.error);
     }
-  }, [fetcher.data, onOpenChange, onSuccess]);
+  }, [fetcher.data, onOpenChange, onSuccess, revalidator]);
 
   const handleSubmit = useCallback(() => {
     fetcher.submit(

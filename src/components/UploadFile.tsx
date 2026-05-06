@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useRevalidator } from 'react-router';
 import {
   ImageKitAbortError,
   ImageKitInvalidRequestError,
@@ -34,6 +34,7 @@ export const UploadFile = ({ open, onOpenChange }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortController = new AbortController();
   const location = useLocation();
+  const revalidator = useRevalidator();
   const currentFolderName = useFolder();
 
   const getAuthData = useCallback(async () => {
@@ -95,6 +96,7 @@ export const UploadFile = ({ open, onOpenChange }: Props) => {
 
       setProgress(0);
       onOpenChange(false);
+      revalidator.revalidate();
     } catch (error) {
       if (error instanceof ImageKitAbortError) {
         toast.warning(`Carga interrumpida: ${error?.message}`);
@@ -116,6 +118,7 @@ export const UploadFile = ({ open, onOpenChange }: Props) => {
     currentFolderName,
     getAuthData,
     onOpenChange,
+    revalidator,
   ]);
 
   return (

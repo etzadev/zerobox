@@ -11,11 +11,23 @@ type ZeroboxActionData = {
   currentFolderName?: string | null;
 };
 
+const getFolderPath = (currentFolderName?: string | null, parentFolderPath?: string) => {
+  const parentPath =
+    parentFolderPath && parentFolderPath !== '/'
+      ? `/${parentFolderPath.replace(/^\/+|\/+$/g, '')}`
+      : '';
+
+  return `/${currentFolderName ?? ''}${parentPath}`;
+};
+
 export const createFolder = async (data: ZeroboxActionData) => {
   try {
     await executeImageKitFunction('CREATE_FOLDER', {
       folderName: data.folderName,
-      parentFolderPath: `${data?.currentFolderName ?? ''}${data?.parentFolderPath ? `/${data.parentFolderPath}` : '/'}`,
+      parentFolderPath: getFolderPath(
+        data.currentFolderName,
+        data.parentFolderPath,
+      ),
     });
 
     return { ok: true, message: 'Carpeta creada correctamente' };
