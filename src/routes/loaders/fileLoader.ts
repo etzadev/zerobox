@@ -1,28 +1,14 @@
 import { redirect, type LoaderFunction } from 'react-router';
-import axios, { type AxiosRequestConfig } from 'axios';
 import { AppwriteException } from 'appwrite';
 import { getCurrentUserFolder } from '@/lib/appwrite';
-
-const API_KEY = btoa(`${import.meta.env.VITE_IMAGEKIT_API_KEY}:`);
+import { executeImageKitFunction } from '@/lib/imagekitFunction';
 
 const getFiles = async (folderName: string, isRecent?: boolean) => {
-  const options: AxiosRequestConfig = {
-    method: 'GET',
-    url: import.meta.env.VITE_IMAGEKIT_API_ENDPOINT,
-    headers: {
-      Accept: `application/json`,
-      Authorization: `Basic ${API_KEY}`,
-    },
-    params: {
+  try {
+    return await executeImageKitFunction('LIST_FILES', {
       path: folderName || '',
       sort: isRecent ? 'DESC_CREATED' : 'ASC_CREATED',
-    },
-  };
-
-  try {
-    const { data } = await axios.request(options);
-
-    return data;
+    });
   } catch (error) {
     console.log(error);
 
@@ -31,20 +17,11 @@ const getFiles = async (folderName: string, isRecent?: boolean) => {
 };
 
 const getFolders = async (folderName: string) => {
-  const options: AxiosRequestConfig = {
-    method: 'GET',
-    url: import.meta.env.VITE_IMAGEKIT_API_ENDPOINT,
-    headers: { Accept: `application/json`, Authorization: `Basic ${API_KEY}` },
-    params: {
+  try {
+    return await executeImageKitFunction('LIST_FOLDERS', {
       path: folderName || '',
       type: 'folder',
-    },
-  };
-
-  try {
-    const { data } = await axios.request(options);
-
-    return data;
+    });
   } catch (error) {
     console.log(error);
 

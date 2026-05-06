@@ -1,8 +1,6 @@
-import axios, { type AxiosRequestConfig } from 'axios';
 import type { ActionFunction } from 'react-router';
 import { getCurrentUserFolder } from '@/lib/appwrite';
-
-const API_KEY = btoa(`${import.meta.env.VITE_IMAGEKIT_API_KEY}:`);
+import { executeImageKitFunction } from '@/lib/imagekitFunction';
 
 type ZeroboxActionData = {
   fileId?: string;
@@ -14,22 +12,11 @@ type ZeroboxActionData = {
 };
 
 export const createFolder = async (data: ZeroboxActionData) => {
-  const options: AxiosRequestConfig = {
-    method: 'POST',
-    url: 'https://api.imagekit.io/v1/folder',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Basic ${API_KEY}`,
-    },
-    data: {
+  try {
+    await executeImageKitFunction('CREATE_FOLDER', {
       folderName: data.folderName,
       parentFolderPath: `${data?.currentFolderName ?? ''}${data?.parentFolderPath ? `/${data.parentFolderPath}` : '/'}`,
-    },
-  };
-
-  try {
-    await axios.request(options);
+    });
 
     return { ok: true, message: 'Carpeta creada correctamente' };
   } catch (error) {
@@ -38,23 +25,12 @@ export const createFolder = async (data: ZeroboxActionData) => {
 };
 
 export const renameFile = async (data: ZeroboxActionData) => {
-  const options: AxiosRequestConfig = {
-    method: 'PUT',
-    url: `${import.meta.env.VITE_IMAGEKIT_API_ENDPOINT}/rename`,
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Basic ${API_KEY}`,
-    },
-    data: {
+  try {
+    await executeImageKitFunction('RENAME_FILE', {
       filePath: data?.filePath,
       newFileName: data?.newName,
       purgeCache: true,
-    },
-  };
-
-  try {
-    await axios.request(options);
+    });
 
     return { ok: true, message: 'Nombre cambiado correctamente' };
   } catch (error) {
@@ -63,17 +39,10 @@ export const renameFile = async (data: ZeroboxActionData) => {
 };
 
 export const deleteFile = async (data: ZeroboxActionData) => {
-  const options: AxiosRequestConfig = {
-    method: 'DELETE',
-    url: `${import.meta.env.VITE_IMAGEKIT_API_ENDPOINT}/${data.fileId}`,
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Basic ${API_KEY}`,
-    },
-  };
-
   try {
-    await axios.request(options);
+    await executeImageKitFunction('DELETE_FILE', {
+      fileId: data.fileId,
+    });
 
     return { ok: true, message: 'Archivo eliminado correctamente' };
   } catch (error) {

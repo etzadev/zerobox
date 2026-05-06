@@ -1,29 +1,15 @@
-import axios from 'axios';
 import { redirect, type LoaderFunction } from 'react-router';
 import { AppwriteException } from 'appwrite';
 import { getCurrentUserFolder } from '@/lib/appwrite';
-import type { AxiosRequestConfig } from 'axios';
-
-const API_KEY = btoa(`${import.meta.env.VITE_IMAGEKIT_API_KEY}:`);
+import { executeImageKitFunction } from '@/lib/imagekitFunction';
 
 const getFilesByFolder = async (path: string) => {
   const folderName = await getCurrentUserFolder();
-  const options: AxiosRequestConfig = {
-    method: 'GET',
-    url: import.meta.env.VITE_IMAGEKIT_API_ENDPOINT,
-    params: {
-      path: `/${folderName}/${path}`,
-    },
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Basic ${API_KEY}`,
-    },
-  };
 
   try {
-    const { data } = await axios.request(options);
-
-    return data;
+    return await executeImageKitFunction('LIST_FILES', {
+      path: `/${folderName}/${path}`,
+    });
   } catch (error) {
     console.log(error);
 
