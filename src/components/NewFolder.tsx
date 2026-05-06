@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFetcher, useRevalidator } from 'react-router';
 import {
   Dialog,
@@ -21,22 +21,30 @@ interface Props {
 export const NewFolder = ({ open, onOpenChange, onSuccess }: Props) => {
   const fetcher = useFetcher();
   const revalidator = useRevalidator();
+  const handledResponse = useRef(false);
   const [folderName, setFolderName] = useState('Nueva Carpeta');
   const [parentFolderPath, setParentFolderPath] = useState('/');
   const isLoading = fetcher.state !== 'idle';
 
   useEffect(() => {
     if (!fetcher.data) return;
+    if (handledResponse.current) return;
 
+    handledResponse.current = true;
     if (fetcher.data.ok) {
-      toast.success('Carpeta creada correctamente');
+      toast.success(
+        fetcher.data.message ?? 'Carpeta creada correctamente',
+        { id: 'create-folder-success' },
+      );
 
       onSuccess?.();
       onOpenChange(false);
       revalidator.revalidate();
+      window.setTimeout(() => revalidator.revalidate(), 1200);
     } else {
       toast.error(
         fetcher.data.error ?? 'Algo salió mal, inténtalo de nuevo más tarde',
+        { id: 'create-folder-error' },
       );
 
       console.log(fetcher.data.error);
@@ -44,6 +52,7 @@ export const NewFolder = ({ open, onOpenChange, onSuccess }: Props) => {
   }, [fetcher.data, onOpenChange, onSuccess, revalidator]);
 
   const handleSubmit = useCallback(() => {
+    handledResponse.current = false;
     fetcher.submit(
       { folderName, parentFolderPath },
       {

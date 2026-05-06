@@ -90,13 +90,16 @@ export const UploadFile = ({ open, onOpenChange }: Props) => {
         abortSignal: abortController.signal,
       });
 
-      toast.success('Archivo subido correctamente');
+      toast.success('Archivo subido correctamente', {
+        id: 'upload-file-success',
+      });
 
       if (fileInputRef.current) fileInputRef.current.value = '';
 
       setProgress(0);
       onOpenChange(false);
       revalidator.revalidate();
+      window.setTimeout(() => revalidator.revalidate(), 1200);
     } catch (error) {
       if (error instanceof ImageKitAbortError) {
         toast.warning(`Carga interrumpida: ${error?.message}`);
