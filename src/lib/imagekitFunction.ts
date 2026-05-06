@@ -4,6 +4,7 @@ type ImageKitFunctionMethod =
   | 'CREATE_FOLDER'
   | 'RENAME_FILE'
   | 'DELETE_FILE'
+  | 'LIST_ALL_FILES'
   | 'LIST_FILES'
   | 'LIST_FOLDERS';
 
@@ -17,6 +18,7 @@ type ImageKitFunctionResponse<T> = {
 const functionPaths: Record<ImageKitFunctionMethod, string> = {
   CREATE_FOLDER: '/folders',
   DELETE_FILE: '/files/delete',
+  LIST_ALL_FILES: '/files',
   LIST_FILES: '/files',
   LIST_FOLDERS: '/folders',
   RENAME_FILE: '/files/rename',

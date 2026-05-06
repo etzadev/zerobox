@@ -31,8 +31,23 @@ const parseBody = (body) => {
   return JSON.parse(body);
 };
 
+const getAllFiles = async (path) => {
+  const normalizedPath = path.replace(/\/+$/g, '');
+  const files = await runImageKit((callback) =>
+    imagekit.listFiles(
+      {
+        searchQuery: `type = "file" AND filePath : "${normalizedPath}/*"`,
+        limit: 1000,
+      },
+      callback,
+    ),
+  );
+
+  return files;
+};
+
 export default async function main(context) {
-  const { req, res, error } = context;
+  const { req, res, error, log } = context;
 
   try {
     if (req.path === '/ping') return res.text('pong');
@@ -54,6 +69,19 @@ export default async function main(context) {
     }
 
     const { method, data = {} } = parseBody(req.body);
+    log(
+      JSON.stringify({
+        data,
+        method,
+        path: req.path,
+      }),
+    );
+
+    if (method === 'LIST_ALL_FILES') {
+      const files = await getAllFiles(data.path);
+
+      return res.json({ ok: true, data: files }, 200, headers);
+    }
 
     if (method === 'LIST_FILES' || req.path === '/files') {
       const files = await runImageKit((callback) =>
