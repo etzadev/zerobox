@@ -2,14 +2,20 @@ import { useLoaderData } from 'react-router';
 import { ChevronDownIcon } from 'lucide-react';
 import { FolderCard } from '@/components/FolderCard';
 import { FileCard } from '@/components/FileCard';
+import type { File, FolderCardType } from '@/types/all-types';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
+type HomeLoaderData = {
+  files: File[];
+  folders: FolderCardType[];
+};
+
 export const Home = () => {
-  const { files, folders } = useLoaderData();
+  const { files, folders } = useLoaderData() as HomeLoaderData;
 
   return (
     <>
@@ -39,7 +45,7 @@ export const Home = () => {
 
           <CollapsibleContent className='overflow-hidden transition-all duration-300'>
             <div className='grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4'>
-              {files.map((file: File, i: number) => (
+              {files.map((file, i: number) => (
                 <FileCard
                   key={i}
                   file={file}

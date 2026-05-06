@@ -4,7 +4,16 @@ import { getCurrentUserFolder } from '@/lib/appwrite';
 
 const API_KEY = btoa(`${import.meta.env.VITE_IMAGEKIT_API_KEY}:`);
 
-export const createFolder = async (data) => {
+type ZeroboxActionData = {
+  fileId?: string;
+  filePath?: string;
+  newName?: string;
+  folderName?: string;
+  parentFolderPath?: string;
+  currentFolderName?: string | null;
+};
+
+export const createFolder = async (data: ZeroboxActionData) => {
   const options: AxiosRequestConfig = {
     method: 'POST',
     url: 'https://api.imagekit.io/v1/folder',
@@ -28,7 +37,7 @@ export const createFolder = async (data) => {
   }
 };
 
-export const renameFile = async (data) => {
+export const renameFile = async (data: ZeroboxActionData) => {
   const options: AxiosRequestConfig = {
     method: 'PUT',
     url: `${import.meta.env.VITE_IMAGEKIT_API_ENDPOINT}/rename`,
@@ -53,7 +62,7 @@ export const renameFile = async (data) => {
   }
 };
 
-export const deleteFile = async (data) => {
+export const deleteFile = async (data: ZeroboxActionData) => {
   const options: AxiosRequestConfig = {
     method: 'DELETE',
     url: `${import.meta.env.VITE_IMAGEKIT_API_ENDPOINT}/${data.fileId}`,

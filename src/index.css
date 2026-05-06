@@ -118,3 +118,120 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes landing-grid-drift {
+  0% {
+    background-position:
+      0 0,
+      0 0,
+      50% 0;
+  }
+  100% {
+    background-position:
+      48px 48px,
+      -48px 48px,
+      50% 100%;
+  }
+}
+
+@keyframes landing-scanline {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes landing-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-panel-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes landing-row-in {
+  0% {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes landing-logo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.landing-grid-background {
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, transparent 0%, color-mix(in oklch, var(--background) 68%, transparent) 48%, transparent 100%);
+  background-size:
+    48px 48px,
+    48px 48px,
+    100% 52%;
+  opacity: 0.65;
+  animation: landing-grid-drift 18s linear infinite;
+}
+
+.landing-scanline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  height: 42%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in oklch, var(--background) 84%, transparent),
+    transparent
+  );
+  animation: landing-scanline 8s ease-in-out infinite;
+}
+
+.landing-fade-up {
+  animation: landing-fade-up 600ms ease-out both;
+}
+
+.landing-panel-motion {
+  animation:
+    landing-fade-up 600ms ease-out both,
+    landing-panel-float 6s ease-in-out 900ms infinite;
+}
+
+.landing-file-row {
+  opacity: 0;
+  animation: landing-row-in 520ms ease-out both;
+}
+
+.landing-logo-float {
+  animation: landing-logo-float 3s ease-in-out infinite;
+}

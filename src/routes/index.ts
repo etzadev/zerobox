@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { AppLayout } from '@/layouts/AppLayout';
+import { Landing } from '@/pages/Landing';
 import { RootError } from '@/pages/error/Root';
 import { Home } from '@/pages/zerobox/Home';
 import { MyBox } from '@/pages/zerobox/MyBox';
@@ -14,6 +15,7 @@ import { signupAction } from '@/routes/actions/signup';
 import { forgotPasswordAction } from '@/routes/actions/forgotPassword';
 import { resetPasswordAction } from '@/routes/actions/resetPassword';
 import { zeroboxActions } from '@/routes/actions/zeroboxActions';
+import { landingLoader } from '@/routes/loaders/landing';
 import { zeroboxLoader } from '@/routes/loaders/zerobox';
 import { zeroboxFileLoader } from '@/routes/loaders/fileLoader';
 import { zeroboxFolderLoader } from '@/routes/loaders/folderLoader';
@@ -21,6 +23,8 @@ import { zeroboxFolderLoader } from '@/routes/loaders/folderLoader';
 export const router = createBrowserRouter([
   {
     path: '/',
+    Component: Landing,
+    loader: landingLoader,
     ErrorBoundary: RootError,
   },
   {
