@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router';
 import { AppLayout } from '@/layouts/AppLayout';
 import { Landing } from '@/pages/Landing';
 import { RootError } from '@/pages/error/Root';
+import { ZeroboxError } from '@/pages/error/Zerobox';
 import { Home } from '@/pages/zerobox/Home';
 import { MyBox } from '@/pages/zerobox/MyBox';
 import { RecentFiles } from '@/pages/zerobox/RecentFiles';
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
     Component: AppLayout,
     loader: zeroboxLoader,
     action: zeroboxActions,
+    ErrorBoundary: ZeroboxError,
     children: [
       {
         path: 'home',

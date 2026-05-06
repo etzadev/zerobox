@@ -17,6 +17,11 @@ const toList = (value: unknown) => {
 
   if (Array.isArray(response.data)) return response.data;
   if (Array.isArray(response.files)) return response.files;
+  if ('motto' in response) {
+    throw new Error(
+      'La Appwrite Function sigue usando el código inicial. Despliega la función de ImageKit.',
+    );
+  }
 
   throw new Error('LIST_FILES no devolvió una lista de ImageKit');
 };
