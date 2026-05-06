@@ -29,8 +29,16 @@ export default async ({ req, res, error }) => {
     if (req.path === '/auth') return res.json(getUploadAuth());
 
     const { method, data } = JSON.parse(req.body || '{}');
+    const action =
+      method ||
+      {
+        '/files': 'LIST_FILES',
+        '/files/delete': 'DELETE_FILE',
+        '/files/rename': 'RENAME_FILE',
+        '/folders': req.method === 'GET' ? 'LIST_FOLDERS' : 'CREATE_FOLDER',
+      }[req.path];
 
-    if (method === 'CREATE_FOLDER') {
+    if (action === 'CREATE_FOLDER') {
       const response = await axios.post(
         'https://api.imagekit.io/v1/folder',
         data,
@@ -45,7 +53,7 @@ export default async ({ req, res, error }) => {
       return res.json({ ok: true, data: response.data });
     }
 
-    if (method === 'RENAME_FILE') {
+    if (action === 'RENAME_FILE') {
       const response = await axios.put(`${imagekitApiEndpoint}/rename`, data, {
         headers: {
           ...getHeaders(),
@@ -56,7 +64,7 @@ export default async ({ req, res, error }) => {
       return res.json({ ok: true, data: response.data });
     }
 
-    if (method === 'DELETE_FILE') {
+    if (action === 'DELETE_FILE') {
       const response = await axios.delete(`${imagekitApiEndpoint}/${data.fileId}`, {
         headers: getHeaders(),
       });
@@ -64,7 +72,7 @@ export default async ({ req, res, error }) => {
       return res.json({ ok: true, data: response.data });
     }
 
-    if (method === 'LIST_FILES' || method === 'LIST_FOLDERS') {
+    if (action === 'LIST_FILES' || action === 'LIST_FOLDERS') {
       const response = await axios.get(imagekitApiEndpoint, {
         headers: getHeaders(),
         params: data,

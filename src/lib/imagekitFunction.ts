@@ -14,6 +14,14 @@ type ImageKitFunctionResponse<T> = {
   message?: string;
 };
 
+const functionPaths: Record<ImageKitFunctionMethod, string> = {
+  CREATE_FOLDER: '/folders',
+  DELETE_FILE: '/files/delete',
+  LIST_FILES: '/files',
+  LIST_FOLDERS: '/folders',
+  RENAME_FILE: '/files/rename',
+};
+
 export const executeImageKitFunction = async <T = unknown>(
   method: ImageKitFunctionMethod,
   data: Record<string, unknown>,
@@ -21,6 +29,7 @@ export const executeImageKitFunction = async <T = unknown>(
   const execution = await functions.createExecution({
     functionId: import.meta.env.VITE_APPWRITE_FN_ID,
     body: JSON.stringify({ method, data }),
+    xpath: functionPaths[method],
   });
 
   if (execution.responseStatusCode >= 400) {
