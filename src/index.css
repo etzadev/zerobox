@@ -235,3 +235,99 @@
 .landing-logo-float {
   animation: landing-logo-float 3s ease-in-out infinite;
 }
+
+@keyframes ai-processing-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes ai-processing-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes ai-processing-bar {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes ai-processing-sparkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-6px) rotate(12deg);
+  }
+}
+
+.ai-processing-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: color-mix(in oklch, var(--background) 92%, transparent);
+  padding: 24px;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 12%);
+}
+
+.ai-processing-frame {
+  position: relative;
+  display: flex;
+  height: 128px;
+  width: 160px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, color-mix(in oklch, var(--muted) 80%, transparent), var(--background)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 14px,
+      color-mix(in oklch, var(--border) 55%, transparent) 15px
+    );
+  animation: ai-processing-pulse 2.4s ease-in-out infinite;
+}
+
+.ai-processing-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--background) 75%, transparent),
+    transparent
+  );
+  animation: ai-processing-scan 1.6s ease-in-out infinite;
+}
+
+.ai-processing-sparkle {
+  position: absolute;
+  right: 32px;
+  top: 28px;
+  animation: ai-processing-sparkle 1.8s ease-in-out infinite;
+}
+
+.ai-processing-bar {
+  animation: ai-processing-bar 1.3s ease-in-out infinite;
+}

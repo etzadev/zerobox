@@ -32,7 +32,9 @@ type FilePreviewType = {
   thumbnail: string;
   transformQuery: string;
   loading: boolean;
+  imageError: boolean;
   setLoading: (loading: boolean) => void;
+  setImageError: (imageError: boolean) => void;
 };
 
 type FolderCardType = {

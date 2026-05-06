@@ -16,7 +16,7 @@ type ImageKitFunctionResponse<T> = {
 };
 
 const functionPaths: Record<ImageKitFunctionMethod, string> = {
-  CREATE_FOLDER: '/folders',
+  CREATE_FOLDER: '/folders/create',
   DELETE_FILE: '/files/delete',
   LIST_ALL_FILES: '/files',
   LIST_FILES: '/files',

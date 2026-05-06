@@ -15,6 +15,7 @@ import type { FileDetailsType } from '@/types/all-types';
 
 export const FileDetails = ({ open, onOpenChange, file }: FileDetailsType) => {
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const [selectedTransforms, setSelectedTransforms] = useState<string[]>([]);
   const [prompts, setPrompts] = useState<{ [key: string]: string }>({});
 
@@ -27,6 +28,7 @@ export const FileDetails = ({ open, onOpenChange, file }: FileDetailsType) => {
 
   const handleToggle = useCallback((id: string, promptText?: string) => {
     setLoading(true);
+    setImageError(false);
 
     const transformId = promptText
       ? `${id}-prompt-${promptText.trim().replace(/\s+/g, '_')}`
@@ -68,7 +70,9 @@ export const FileDetails = ({ open, onOpenChange, file }: FileDetailsType) => {
             thumbnail={thumbnail}
             transformQuery={transformQuery}
             loading={loading}
+            imageError={imageError}
             setLoading={setLoading}
+            setImageError={setImageError}
           />
 
           <div className='w-80 border-l bg-background p-4 flex flex-col'>
