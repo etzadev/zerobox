@@ -34,12 +34,12 @@ export const FileCard = ({ file }: { file: File }) => {
 
   return (
     <>
-      <Card>
-        <CardHeader className='flex pl-4 pr-4'>
-          <CardTitle className='flex justify-between w-full'>
-            <span className='flex gap-2 items-center'>
+      <Card className='landing-fade-up group overflow-hidden border bg-background/90 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md'>
+        <CardHeader className='flex px-4 pb-2'>
+          <CardTitle className='flex w-full items-center justify-between gap-3 text-sm'>
+            <span className='flex min-w-0 items-center gap-2'>
               {Icon && <Icon />}
-              <span>
+              <span className='truncate'>
                 {file.name.slice(0, 16)}
                 {file.name.length > 18 ? '...' : ''}
               </span>
@@ -50,22 +50,24 @@ export const FileCard = ({ file }: { file: File }) => {
         </CardHeader>
 
         <CardContent
-          className='grow cursor-pointer'
+          className='grow cursor-pointer px-4'
           onClick={() => setDetailsOpen(true)}
         >
-          <Image
-            urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
-            src={thumbnail}
-            width={500}
-            height={500}
-            alt={file.name}
-            loading='lazy'
-            className='w-full h-full object-cover rounded-lg'
-          />
+          <div className='aspect-[4/3] overflow-hidden rounded-md bg-muted'>
+            <Image
+              urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
+              src={thumbnail}
+              width={500}
+              height={500}
+              alt={file.name}
+              loading='lazy'
+              className='h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]'
+            />
+          </div>
         </CardContent>
 
-        <CardFooter>
-          <p>
+        <CardFooter className='px-4 pt-3 text-xs text-muted-foreground'>
+          <p className='truncate'>
             Última actualización:{' '}
             {file.updatedAt ? formatCustomDate(file.updatedAt) : 'Unknown'}
           </p>

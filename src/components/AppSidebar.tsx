@@ -36,13 +36,20 @@ export const AppSidebar = ({
 
   return (
     <>
-      <Sidebar {...props}>
-        <SidebarHeader>
-          <Link to='/zerobox/home'>
+      <Sidebar
+        className='border-r bg-background/95 backdrop-blur'
+        {...props}
+      >
+        <SidebarHeader className='px-3 py-4'>
+          <Link
+            to='/zerobox/home'
+            className='flex items-center gap-2 font-medium'
+          >
             <Logo
               variant='icon'
               className={cn(state === 'collapsed' ? 'size-8' : 'size-10')}
             />
+            {state === 'expanded' && <span>ZeroBox</span>}
           </Link>
         </SidebarHeader>
 
@@ -53,7 +60,7 @@ export const AppSidebar = ({
                 <DropdownMenuTrigger asChild>
                   <Button
                     size={state === 'collapsed' ? 'icon' : 'default'}
-                    className={`${cn(state === 'collapsed' && 'size-8')} bg-blue-500 text-white hover:bg-blue-600`}
+                    className={`${cn(state === 'collapsed' && 'size-8')} w-full bg-blue-500 text-white shadow-sm transition-transform hover:scale-[1.02] hover:bg-blue-600`}
                   >
                     <PlusIcon /> {state === 'expanded' && 'Nuevo'}
                   </Button>
@@ -85,7 +92,7 @@ export const AppSidebar = ({
                 >
                   <Link
                     to={item.url}
-                    className='flex items-center gap-2'
+                    className='flex items-center gap-2 rounded-md transition-colors'
                   >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
