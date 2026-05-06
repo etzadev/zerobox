@@ -3,10 +3,12 @@ import { AppwriteException } from 'appwrite';
 import { getCurrentUserFolder } from '@/lib/appwrite';
 import { executeImageKitFunction } from '@/lib/imagekitFunction';
 
-const toList = (value: unknown) => {
+const toList = (value: unknown, method: 'LIST_FILES' | 'LIST_FOLDERS') => {
   if (Array.isArray(value)) return value;
 
-  if (!value || typeof value !== 'object') return [];
+  if (!value || typeof value !== 'object') {
+    throw new Error(`${method} no devolvió una lista de ImageKit`);
+  }
 
   const response = value as {
     data?: unknown;
@@ -18,7 +20,7 @@ const toList = (value: unknown) => {
   if (Array.isArray(response.files)) return response.files;
   if (Array.isArray(response.folders)) return response.folders;
 
-  return [];
+  throw new Error(`${method} no devolvió una lista de ImageKit`);
 };
 
 const getFiles = async (folderName: string, isRecent?: boolean) => {
@@ -29,7 +31,7 @@ const getFiles = async (folderName: string, isRecent?: boolean) => {
       type: 'file',
     });
 
-    return toList(files);
+    return toList(files, 'LIST_FILES');
   } catch (error) {
     console.log(error);
 
@@ -44,7 +46,7 @@ const getFolders = async (folderName: string) => {
       type: 'folder',
     });
 
-    return toList(folders);
+    return toList(folders, 'LIST_FOLDERS');
   } catch (error) {
     console.log(error);
 

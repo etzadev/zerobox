@@ -6,7 +6,9 @@ import { executeImageKitFunction } from '@/lib/imagekitFunction';
 const toList = (value: unknown) => {
   if (Array.isArray(value)) return value;
 
-  if (!value || typeof value !== 'object') return [];
+  if (!value || typeof value !== 'object') {
+    throw new Error('LIST_FILES no devolvió una lista de ImageKit');
+  }
 
   const response = value as {
     data?: unknown;
@@ -16,7 +18,7 @@ const toList = (value: unknown) => {
   if (Array.isArray(response.data)) return response.data;
   if (Array.isArray(response.files)) return response.files;
 
-  return [];
+  throw new Error('LIST_FILES no devolvió una lista de ImageKit');
 };
 
 const getFilesByFolder = async (path: string) => {
