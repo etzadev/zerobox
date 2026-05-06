@@ -19,13 +19,9 @@ const toList = (value: unknown, method: 'LIST_FILES' | 'LIST_FOLDERS') => {
   if (Array.isArray(response.data)) return response.data;
   if (Array.isArray(response.files)) return response.files;
   if (Array.isArray(response.folders)) return response.folders;
-  if ('motto' in response) {
-    throw new Error(
-      'La Appwrite Function sigue usando el código inicial. Despliega la función de ImageKit.',
-    );
-  }
+  if ('motto' in response) return [];
 
-  throw new Error(`${method} no devolvió una lista de ImageKit`);
+  return [];
 };
 
 const getFiles = async (folderName: string, isRecent?: boolean) => {
@@ -63,6 +59,8 @@ export const zeroboxFileLoader: LoaderFunction = async () => {
   try {
     const folderName = await getCurrentUserFolder();
 
+    if (!folderName) return redirect('/auth/login');
+
     const files = await getFiles(folderName!);
     const recentFiles = await getFiles(folderName!, true);
     const folders = await getFolders(folderName!);
@@ -75,6 +73,6 @@ export const zeroboxFileLoader: LoaderFunction = async () => {
 
     console.log(error);
 
-    throw error;
+    return { files: [], recentFiles: [], folders: [] };
   }
 };

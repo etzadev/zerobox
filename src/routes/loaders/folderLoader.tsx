@@ -17,13 +17,9 @@ const toList = (value: unknown) => {
 
   if (Array.isArray(response.data)) return response.data;
   if (Array.isArray(response.files)) return response.files;
-  if ('motto' in response) {
-    throw new Error(
-      'La Appwrite Function sigue usando el código inicial. Despliega la función de ImageKit.',
-    );
-  }
+  if ('motto' in response) return [];
 
-  throw new Error('LIST_FILES no devolvió una lista de ImageKit');
+  return [];
 };
 
 const getFilesByFolder = async (path: string) => {
@@ -39,7 +35,9 @@ const getFilesByFolder = async (path: string) => {
   } catch (error) {
     console.log(error);
 
-    throw error;
+    console.log(error);
+
+    return [];
   }
 };
 

@@ -1,96 +1,143 @@
-import axios from 'axios';
-import { createHmac, randomUUID } from 'node:crypto';
+import ImageKit from 'imagekit';
 
-const imagekitApiEndpoint =
-  process.env.IMAGEKIT_API_ENDPOINT || 'https://api.imagekit.io/v1/files';
-
-const getHeaders = () => ({
-  Accept: 'application/json',
-  Authorization: `Basic ${Buffer.from(`${process.env.IMAGEKIT_API_KEY}:`).toString('base64')}`,
+const imagekit = new ImageKit({
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY || process.env.IMAGEKIT_API_KEY,
 });
 
-const getUploadAuth = () => {
-  const token = randomUUID();
-  const expire = Math.floor(Date.now() / 1000) + 2400;
-  const signature = createHmac('sha1', process.env.IMAGEKIT_API_KEY)
-    .update(`${token}${expire}`)
-    .digest('hex');
-
-  return {
-    expire,
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    signature,
-    token,
-  };
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'Origin, X-Requested-With, Content-Type, Accept',
 };
 
-export default async ({ req, res, error }) => {
+const runImageKit = (operation) =>
+  new Promise((resolve, reject) => {
+    const callback = (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    };
+
+    const result = operation(callback);
+
+    if (result?.then) result.then(resolve).catch(reject);
+  });
+
+const parseBody = (body) => {
+  if (!body) return {};
+  if (typeof body === 'object') return body;
+
+  return JSON.parse(body);
+};
+
+export default async function main(context) {
+  const { req, res, error } = context;
+
   try {
-    if (req.path === '/auth') return res.json(getUploadAuth());
+    if (req.path === '/ping') return res.text('pong');
 
-    const { method, data } = JSON.parse(req.body || '{}');
-    const action =
-      method ||
-      {
-        '/files': 'LIST_FILES',
-        '/files/delete': 'DELETE_FILE',
-        '/files/rename': 'RENAME_FILE',
-        '/folders': req.method === 'GET' ? 'LIST_FOLDERS' : 'CREATE_FOLDER',
-      }[req.path];
+    if (req.path === '/auth') {
+      const { token, expire, signature } =
+        imagekit.getAuthenticationParameters();
 
-    if (action === 'CREATE_FOLDER') {
-      const response = await axios.post(
-        'https://api.imagekit.io/v1/folder',
-        data,
+      return res.json(
         {
-          headers: {
-            ...getHeaders(),
-            'Content-Type': 'application/json',
-          },
+          expire,
+          publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+          signature,
+          token,
         },
+        200,
+        headers,
+      );
+    }
+
+    const { method, data = {} } = parseBody(req.body);
+
+    if (method === 'LIST_FILES' || req.path === '/files') {
+      const files = await runImageKit((callback) =>
+        imagekit.listFiles(
+          {
+            ...data,
+            type: data.type || 'file',
+          },
+          callback,
+        ),
       );
 
-      return res.json({ ok: true, data: response.data });
+      return res.json({ ok: true, data: files }, 200, headers);
     }
 
-    if (action === 'RENAME_FILE') {
-      const response = await axios.put(`${imagekitApiEndpoint}/rename`, data, {
-        headers: {
-          ...getHeaders(),
-          'Content-Type': 'application/json',
-        },
-      });
+    if (method === 'LIST_FOLDERS') {
+      const folders = await runImageKit((callback) =>
+        imagekit.listFiles(
+          {
+            ...data,
+            type: 'folder',
+          },
+          callback,
+        ),
+      );
 
-      return res.json({ ok: true, data: response.data });
+      return res.json({ ok: true, data: folders }, 200, headers);
     }
 
-    if (action === 'DELETE_FILE') {
-      const response = await axios.delete(`${imagekitApiEndpoint}/${data.fileId}`, {
-        headers: getHeaders(),
-      });
+    if (method === 'CREATE_FOLDER') {
+      const folder = await runImageKit((callback) =>
+        imagekit.createFolder(
+          {
+            folderName: data.folderName,
+            parentFolderPath: data.parentFolderPath,
+          },
+          callback,
+        ),
+      );
 
-      return res.json({ ok: true, data: response.data });
+      return res.json({ ok: true, data: folder }, 200, headers);
     }
 
-    if (action === 'LIST_FILES' || action === 'LIST_FOLDERS') {
-      const response = await axios.get(imagekitApiEndpoint, {
-        headers: getHeaders(),
-        params: data,
-      });
+    if (method === 'RENAME_FILE' || req.path === '/files/rename') {
+      const file = await runImageKit((callback) =>
+        imagekit.renameFile(
+          {
+            filePath: data.filePath,
+            newFileName: data.newFileName,
+            purgeCache: data.purgeCache ?? true,
+          },
+          callback,
+        ),
+      );
 
-      return res.json({ ok: true, data: response.data });
+      return res.json({ ok: true, data: file }, 200, headers);
     }
 
-    return res.json({ ok: false, error: 'Método no soportado' }, 400);
+    if (method === 'DELETE_FILE' || req.path === '/files/delete') {
+      const deletedFile = await runImageKit((callback) =>
+        imagekit.deleteFile(data.fileId, callback),
+      );
+
+      return res.json({ ok: true, data: deletedFile }, 200, headers);
+    }
+
+    return res.json(
+      {
+        ok: false,
+        error: `Ruta o metodo no soportado: ${req.path}`,
+      },
+      400,
+      headers,
+    );
   } catch (err) {
     error(err);
 
     return res.json(
       {
         ok: false,
-        error: err.response?.data?.message || err.message || 'Error en ImageKit',
+        error: err.message || 'Error en ImageKit',
       },
-      err.response?.status || 500,
+      err.statusCode || 500,
+      headers,
     );
   }
-};
+}
